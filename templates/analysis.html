@@ -1,0 +1,7 @@
+{% extends "home.html" %}
+{% block content %}
+<h1>{{name}}</h1>
+{{data | safe}}
+
+<img src="{{ image }}" alt="my plot">
+{% endblock %}

@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error
 import os
 from joblib import dump 
 
-def convert_timeseries_stationary(data: pd.Series, alpha = 0.05, max_diff = 10):
+def convert_timeseries_stationary(data, alpha = 0.05, max_diff = 10):
     if adfuller(data)[1] < alpha:
         return {'diff_order':0,
                 'time_series': data}
@@ -21,8 +21,9 @@ def convert_timeseries_stationary(data: pd.Series, alpha = 0.05, max_diff = 10):
     significant = sorted(significant, key=lambda x: x[1])
 
     diff_order = significant[0][0]
+    ts = data.diff(diff_order).dropna()
     return {'diff_order': diff_order,
-            'time_series': np.array(data.diff(diff_order).dropna())}
+            'time_series': ts.resample('M').mean()}
 
 
 def GridSearchARIMA(ts,d,train_per=0.7):
@@ -53,26 +54,3 @@ def GridSearchARIMA(ts,d,train_per=0.7):
                          seasonal_order=(1,0,0,12))
     result = best_model.fit()
     return result
-
-
-"""
-if 'NFLX.csv' in os.listdir('data'):
-    stock = pd.read_csv('data/NFLX.csv')
-else:
-    stock = yf.download('NFLX',
-                    start='2002-01-01',
-                    end='2021-01-01')
-    stock.to_csv('data/NFLX.csv')
-
-stat_data = convert_timeseries_stationary(stock['Close'])
-ts = stat_data['time_series']
-
-train_len = int(0.7*len(ts))
-model = SARIMAX(ts[:train_len], 
-                order=(4,stat_data['diff_order'],1),
-                seasonal_order=(1,0,0,12)) 
-
-dump(model,filename='arima_model.joblib')
-"""
-
-

@@ -94,9 +94,14 @@ body {
 </div>
 
 <div style="padding-left:16px">
-  <h2> Twitter Sentiment Analysis </h2>
+  <h2> Stock Time Series Analysis </h2>
 </div>
 
+<div id="content">{% block content %}{% endblock %}</div>
+<div id="footer">
+  {% block footer %}
+  &copy; Copyright 2010 by <a href="http://domain.invalid/">Moshiko</a>.
+  {% endblock %}
 </body>
 </html>
 
