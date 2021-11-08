@@ -1,7 +1,51 @@
 {% extends "home.html" %}
 {% block content %}
-<h1>{{name}}</h1>
-{{data | safe}}
-
-<img src="{{ image }}" alt="my plot">
+<body>
+  <table align="center" border="1" cellpadding="0" cellspacing="0" width="600">
+      <tr>
+          <td>
+              <h1 style="font-size: 24px; font-weight: bold; text-transform: uppercase; color: #444444 !important; margin: 0px; padding: 0px;">
+                 {{name}}
+              </h1>
+            
+          </td>
+          <td rowspan="2">
+              <img src="{{image}}" alt="season"/>
+          </td>
+      </tr>
+      <tr>
+          <td>
+            {{data | safe }}
+          </td>
+      </tr>
+      <tr>
+        <td colspan=2>
+          <img src="{{image1}}" alt="decomposition"/>
+        </td> 
+      </tr>
+      <tr>
+        <td colspan=2>
+          <img src="{{image2}}" alt="decomposition"/>
+        </td> 
+      </tr>
+      <tr>
+        <td colspan=2>
+        <img src="{{image3}}" alt="acf"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=2>
+          <img src="{{image4}}" alt="pacf"/>
+          </td>
+      </tr>
+      <tr>
+        <td colspan=2>
+          <img src="{{image5}}" alt="pacf"/>
+        </td>
+      </tr>
+  </table>
+</body>
+<section>
 {% endblock %}
+
+
