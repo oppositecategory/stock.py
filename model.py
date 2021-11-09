@@ -7,6 +7,7 @@ from sklearn.metrics import mean_squared_error
 
 import os
 
+
 def convert_timeseries_stationary(data, alpha = 0.05, max_diff = 10):
     if adfuller(data)[1] < alpha:
         return {'diff_order':0,

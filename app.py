@@ -23,10 +23,10 @@ from model import ARIMAModel, convert_timeseries_stationary
 matplotlib.use('Agg')  # turn off gui
 sns.set(rc={'figure.figsize':(8,3)}) # Use seaborn backend 
 
-def get_stock_data(stock_name):
+async def get_stock_data(stock_name):
     return yf.download(stock_name,
-                       start='2015-01-01',
-                       end='2021-11-07') 
+                            start='2015-01-01',
+                            end='2021-11-07') 
 
 def requestResults(df,p,q):
     stat_data = convert_timeseries_stationary(df['Close'])
@@ -94,15 +94,16 @@ def success(name):
     decompose_fig.set_size_inches(10,5)
     decompose_img = extract_plot_from_fig(decompose_fig)
 
-    acf_fig = plot_acf(df['Close'].dropna());
-    pacf_fig = plot_pacf(df['Close'].diff(2).dropna());
-
-    acf_img = extract_plot_from_fig(acf_fig);
-    pacf_img = extract_plot_from_fig(pacf_fig);
     
     stat_data = convert_timeseries_stationary(df['Close'])
     d, ts, fig = stat_data.values()
     stat_img = extract_plot_from_fig(fig)
+
+    acf_fig = plot_acf(ts);
+    pacf_fig = plot_pacf(ts);
+
+    acf_img = extract_plot_from_fig(acf_fig);
+    pacf_img = extract_plot_from_fig(pacf_fig);
 
     if request.method == 'POST':
         p = int(request.form['p'])
