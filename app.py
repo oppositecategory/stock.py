@@ -101,7 +101,6 @@ def success(name):
     pacf_img = extract_plot_from_fig(pacf_fig);
     
     stat_data = convert_timeseries_stationary(df['Close'])
-
     d, ts, fig = stat_data.values()
     stat_img = extract_plot_from_fig(fig)
 
