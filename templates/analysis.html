@@ -15,7 +15,7 @@
       </tr>
       <tr>
           <td>
-            {{data | safe }}
+            {{stats | safe }}
           </td>
       </tr>
       <tr>
@@ -40,9 +40,33 @@
       </tr>
       <tr>
         <td colspan=2>
-          <img src="{{image5}}" alt="pacf"/>
+          <img src="{{image5}}" alt="stat"/>
+          </td>
+      </tr>
+      <tr>
+        <td colspan=2>
+          <h2> ARIMA model parameters</h2>
+          <form action="http://localhost:5000/stock/{{name}}" method="post">
+            <label for="p">Number of time lags p:</label><br>
+            <input type="text" id="p" name="p" value="1"><br>
+            <label for="q">Order of moving average model q:</label><br>
+            <input type="text" id="q" name="q" value="1"><br><br>
+            <input type="submit" value="Submit">
+          </form> 
         </td>
       </tr>
+      {% if p %}
+      <tr>
+        <td rowspan=2>
+          {{predictions | safe}}
+        </td>
+        <tr>
+          <td>
+            <img src="{{image6}}" alt="pacf"/>
+          </td>
+        </tr>
+      </tr>
+      {% endif %}
   </table>
 </body>
 <section>

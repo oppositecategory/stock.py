@@ -15,7 +15,10 @@ import yfinance as yf
 import os
 import io 
 import base64
-from model import GridSearchARIMA, convert_timeseries_stationary
+import asyncio 
+
+from model import ARIMAModel, convert_timeseries_stationary
+
 
 matplotlib.use('Agg')  # turn off gui
 sns.set(rc={'figure.figsize':(8,3)}) # Use seaborn backend 
@@ -25,11 +28,10 @@ def get_stock_data(stock_name):
                        start='2015-01-01',
                        end='2021-11-07') 
 
-def requestResults(stock_name):
-    df = get_stock_data(stock_name)
+def requestResults(df,p,q):
     stat_data = convert_timeseries_stationary(df['Close'])
     d, ts = stat_data.values()
-    model = GridSearchARIMA(ts,d)
+    model = ARIMAModel(ts,p,d,q)
     curr_time = ts.index.values[-1]
     predictions = model.predict(curr_time,curr_time + np.timedelta64(30*10,'D'))
     return pd.DataFrame(predictions)
@@ -60,12 +62,19 @@ def home():
 @app.route('/',methods=['POST','GET'])
 def get_data():
     if request.method == 'POST':
+        print(request.path)
         user = request.form['search']
         return redirect(url_for('success',name=user))
 
-@app.route('/stock/<name>')
+@app.route('/stock/<name>', methods=['POST','GET'])
 def success(name):
     df = get_stock_data(name)
+
+    p = None
+    q = None 
+    train_img = None
+    stat_img = None
+    predictions=None
 
     volume_fig,ax = plt.subplots()
     sns.lineplot(x=df.index,y=df['Volume'],label='Volume',ax=ax)
@@ -90,25 +99,39 @@ def success(name):
 
     acf_img = extract_plot_from_fig(acf_fig);
     pacf_img = extract_plot_from_fig(pacf_fig);
-
-    predictions = requestResults(name)
     
-    pred_fig = plt.figure()
-    df['Close'].plot(fig=pred_fig);
-    predictions['predicted_mean'].plot(fig=pred_fig);
-    pred_img = extract_plot_from_fig(pred_fig)
+    stat_data = convert_timeseries_stationary(df['Close'])
 
+    d, ts, fig = stat_data.values()
+    stat_img = extract_plot_from_fig(fig)
 
+    if request.method == 'POST':
+        p = int(request.form['p'])
+        q = int(request.form['q'])
+
+        model, (fig,ax) = ARIMAModel(ts,p,d,q)
+
+        train_img = extract_plot_from_fig(fig)
+
+        curr_time = ts.index.values[-1]
+        predictions = pd.DataFrame(model.predict(curr_time,curr_time + np.timedelta64(30*10,'D'))).to_html()
+
+        
 
     return render_template("analysis.html", 
                             name=name, 
-                            data=pd.DataFrame(df.describe()['Close']).to_html(), 
+                            stats=pd.DataFrame(df.describe()['Close']).to_html(), 
                             image=volume_img,
                             image1=stock_img,
                             image2=decompose_img,
                             image3=acf_img,
                             image4=pacf_img,
-                            image5=pred_img)
+                            image5=stat_img,
+                            image6=train_img,
+                            p=p,
+                            q=q,
+                            predictions=predictions)
+                           
 
 
 if __name__ == '__main__':

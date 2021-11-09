@@ -1,11 +1,11 @@
 import numpy as np 
 import pandas as pd
+import matplotlib.pyplot as plt 
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.statespace.sarimax import SARIMAX 
 from sklearn.metrics import mean_squared_error 
 
 import os
-from joblib import dump 
 
 def convert_timeseries_stationary(data, alpha = 0.05, max_diff = 10):
     if adfuller(data)[1] < alpha:
@@ -19,8 +19,17 @@ def convert_timeseries_stationary(data, alpha = 0.05, max_diff = 10):
 
     diff_order = significant[0][0]
     ts = data.diff(diff_order).dropna()
+
+    fig, ax = plt.subplots()
+    data.dropna().plot(ax=ax,label=f'Original time series')
+    data.diff(diff_order).dropna().plot(ax=ax,label=f'P value: {significant[0][1]}')
+    
+    ax.set_title(f'Optimal difference paramter: {diff_order} tested with ADF ')
+    plt.legend(loc='lower left')
+
     return {'diff_order': diff_order,
-            'time_series': ts.resample('M').mean()}
+            'time_series': ts.resample('M').mean(),
+            'plot': fig}
 
 
 def GridSearchARIMA(ts,d,train_per=0.7):
@@ -51,3 +60,29 @@ def GridSearchARIMA(ts,d,train_per=0.7):
                          seasonal_order=(1,0,0,12))
     result = best_model.fit()
     return result
+
+def ARIMAModel(ts,p,d,q,train_per=0.7):
+    train_len = int(train_per*len(ts))
+    start,end = ts.index.values[train_len], ts.index.values[-1]
+    model = SARIMAX(ts[:train_len],
+                    order=(p,d,q),
+                    seasonal_order=(1,0,0,12))
+    result = model.fit()
+    start,end = ts.index.values[train_len], ts.index.values[-1]
+    predictions = result.predict(start=start,end=end)
+    rmse = mean_squared_error(ts[start:end],predictions)
+
+    fig,ax = plt.subplots()
+    ts[:start].plot(ax=ax,label='Train data')
+    ts[start:].plot(ax=ax,label='Test data')
+    predictions.plot(ax=ax,label='Prediction')
+
+    ax.set_title(f'ARIMA model RMSE: {rmse} p:{p} d: {d} q: {q}')
+    plt.legend(loc='lower left')
+
+    # Model trained on the whole data for future predictions
+    model = SARIMAX(ts,
+                    order=(p,d,q),
+                    seasonal_order=(1,0,0,12))
+    result = model.fit()
+    return result, (fig,ax)
