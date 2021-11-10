@@ -1,75 +1,107 @@
-{% extends "home.html" %}
-{% block content %}
-<body>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+</head>
+
+<body id="content" style="font-family: 'Noto Sans JP', sans-serif;">
+
+  <div class="ml-container" style="display: block;">
+    <center><h1 style=""> Stock Analysis Tool</h1></center>
+    <div class="form-group shadow-textarea" style="margin-top: 30px;text-align: center;color: white;">
+      <form action = "http://localhost:5000/" method = "post">
+        <input type="text" name="search" class="movie form-control" id="autoComplete" autocomplete="off" placeholder="Enter the Stock Name" style="background-color: #ffffff;border-color:#ffffff;width: 60%;color: #181818" required="required" />
+        <br>
+        <div class="form-group" style="text-align: center;">
+          <button type="submit" class="btn btn-primary btn-block movie-button" style="background-color: #0a0a0a;text-align: center;border-color: #0a0a0a;width:120px;" >Enter</button><br><br>
+        </div>
+    </div>
+
+  </form>
+
   <table align="center" border="1" cellpadding="0" cellspacing="0" width="600">
+    <tr>
+        <td>
+            <h1 style="font-size: 24px; font-weight: bold; text-transform: uppercase; color: #444444 !important; margin: 0px; padding: 0px;">
+               {{name}}
+            </h1>
+          
+        </td>
+        <td rowspan="2">
+            <img src="{{image}}" alt="season"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+          {{stats | safe }}
+        </td>
+    </tr>
+    <tr>
+      <td colspan=2>
+        <img src="{{image1}}" alt="decomposition"/>
+      </td> 
+    </tr>
+    <tr>
+      <td colspan=2>
+        <img src="{{image2}}" alt="decomposition"/>
+      </td> 
+    </tr>
+    <tr>
+      <td colspan=2>
+        <img src="{{image5}}" alt="stat"/>
+        </td>
+    </tr>
+    <tr>
+      <td colspan=2>
+      <img src="{{image3}}" alt="acf"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan=2>
+        <img src="{{image4}}" alt="pacf"/>
+        </td>
+    </tr>
+    <tr>
+      <td colspan=2>
+        <h2> ARIMA model parameters</h2>
+        <form action="http://localhost:5000/stock/{{name}}" method="post">
+          <label for="p">Number of time lags p:</label><br>
+          <input type="text" id="p" name="p" value="1"><br>
+          <label for="q">Order of moving average model q:</label><br>
+          <input type="text" id="q" name="q" value="1"><br><br>
+          <input type="submit" value="Submit">
+        </form> 
+      </td>
+    </tr>
+    {% if p %}
+    <tr>
+      <td rowspan=2>
+        {{predictions | safe}}
+      </td>
       <tr>
-          <td>
-              <h1 style="font-size: 24px; font-weight: bold; text-transform: uppercase; color: #444444 !important; margin: 0px; padding: 0px;">
-                 {{name}}
-              </h1>
-            
-          </td>
-          <td rowspan="2">
-              <img src="{{image}}" alt="season"/>
-          </td>
-      </tr>
-      <tr>
-          <td>
-            {{stats | safe }}
-          </td>
-      </tr>
-      <tr>
-        <td colspan=2>
-          <img src="{{image1}}" alt="decomposition"/>
-        </td> 
-      </tr>
-      <tr>
-        <td colspan=2>
-          <img src="{{image2}}" alt="decomposition"/>
-        </td> 
-      </tr>
-      <tr>
-        <td colspan=2>
-          <img src="{{image5}}" alt="stat"/>
-          </td>
-      </tr>
-      <tr>
-        <td colspan=2>
-        <img src="{{image3}}" alt="acf"/>
+        <td>
+          <img src="{{image6}}" alt="pacf"/>
         </td>
       </tr>
-      <tr>
-        <td colspan=2>
-          <img src="{{image4}}" alt="pacf"/>
-          </td>
-      </tr>
-      <tr>
-        <td colspan=2>
-          <h2> ARIMA model parameters</h2>
-          <form action="http://localhost:5000/stock/{{name}}" method="post">
-            <label for="p">Number of time lags p:</label><br>
-            <input type="text" id="p" name="p" value="1"><br>
-            <label for="q">Order of moving average model q:</label><br>
-            <input type="text" id="q" name="q" value="1"><br><br>
-            <input type="submit" value="Submit">
-          </form> 
-        </td>
-      </tr>
-      {% if p %}
-      <tr>
-        <td rowspan=2>
-          {{predictions | safe}}
-        </td>
-        <tr>
-          <td>
-            <img src="{{image6}}" alt="pacf"/>
-          </td>
-        </tr>
-      </tr>
-      {% endif %}
-  </table>
+    </tr>
+    {% endif %}
+</table>
+ 
+<div class="footer" style="">Made by Moshiko</div> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
-<section>
-{% endblock %}
-
-
+</html>

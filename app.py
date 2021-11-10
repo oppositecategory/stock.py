@@ -15,7 +15,6 @@ import yfinance as yf
 import os
 import io 
 import base64
-import asyncio 
 
 from model import ARIMAModel, convert_timeseries_stationary
 
@@ -23,7 +22,7 @@ from model import ARIMAModel, convert_timeseries_stationary
 matplotlib.use('Agg')  # turn off gui
 sns.set(rc={'figure.figsize':(8,3)}) # Use seaborn backend 
 
-async def get_stock_data(stock_name):
+def get_stock_data(stock_name):
     return yf.download(stock_name,
                             start='2015-01-01',
                             end='2021-11-07') 
