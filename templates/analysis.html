@@ -26,6 +26,12 @@
       <form action = "http://localhost:5000/" method = "post">
         <input type="text" name="search" class="movie form-control" id="autoComplete" autocomplete="off" placeholder="Enter the Stock Name" style="background-color: #ffffff;border-color:#ffffff;width: 60%;color: #181818" required="required" />
         <br>
+        <br>
+        <label style="color:#0a0a0a">Starting Date:</label>
+        <input type="date" id="start" name="start">
+        <br>
+        <label style="color:#0a0a0a" >End Date:</label>
+        <input type="date" id="end" name="end">
         <div class="form-group" style="text-align: center;">
           <button type="submit" class="btn btn-primary btn-block movie-button" style="background-color: #0a0a0a;text-align: center;border-color: #0a0a0a;width:120px;" >Enter</button><br><br>
         </div>
@@ -78,7 +84,7 @@
     <tr>
       <td colspan=2>
         <h2> ARIMA model parameters</h2>
-        <form action="http://localhost:5000/stock/{{name}}" method="post">
+        <form action="http://localhost:5000/stock/{{name}}/{{start}}/{{end}}" method="post">
           <label for="p">Number of time lags p:</label><br>
           <input type="text" id="p" name="p" value="1"><br>
           <label for="q">Order of moving average model q:</label><br>

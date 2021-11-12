@@ -22,10 +22,12 @@ from model import ARIMAModel, convert_timeseries_stationary
 matplotlib.use('Agg')  # turn off gui
 sns.set(rc={'figure.figsize':(8,3)}) # Use seaborn backend 
 
-def get_stock_data(stock_name):
+
+
+def get_stock_data(stock_name,start,end):
     return yf.download(stock_name,
-                            start='2015-01-01',
-                            end='2021-11-07') 
+                            start=start,
+                            end=end) 
 
 def requestResults(df,p,q):
     stat_data = convert_timeseries_stationary(df['Close'])
@@ -63,11 +65,13 @@ def get_data():
     if request.method == 'POST':
         print(request.path)
         user = request.form['search']
-        return redirect(url_for('success',name=user))
+        start = request.form['start']
+        end = request.form['end']
+        return redirect(url_for('success',name=user,start=start,end=end))
 
-@app.route('/stock/<name>', methods=['POST','GET'])
-def success(name):
-    df = get_stock_data(name)
+@app.route('/stock/<name>/<start>/<end>', methods=['POST','GET'])
+def success(name, start,end):
+    df = get_stock_data(name,start,end)
 
     p = None
     q = None 
@@ -119,6 +123,8 @@ def success(name):
 
     return render_template("analysis.html", 
                             name=name, 
+                            start=start,
+                            end=end,
                             stats=pd.DataFrame(df.describe()['Close']).to_html(), 
                             image=volume_img,
                             image1=stock_img,
